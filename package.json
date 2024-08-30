@@ -4,12 +4,17 @@
   "description": "This is an express.js backend written for a React App named Taskify.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc && node dist/index.js",
+    "build": "tsc"
   },
   "author": "Rajneesh Mishra",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21"
   }
 }
