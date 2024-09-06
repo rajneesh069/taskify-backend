@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { signupController } from "../controllers/userControllers";
-import { loginController } from "../controllers/authControllers";
+import { loginController, meController } from "../controllers/authControllers";
 
 const router = Router();
 
-// router.get("/me", meController)
+router.get("/me", meController)
 
 router.post("/login", loginController);
 

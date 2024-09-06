@@ -15,7 +15,6 @@ export const loginController = async (req: Request, res: Response) => {
   }
 
   try {
-
     const { email, username } = result.data;
 
     const requestData: {
@@ -61,4 +60,8 @@ export const loginController = async (req: Request, res: Response) => {
     console.error(error);
     return res.json({ message: "Internal Server Error", error }).status(500);
   }
+};
+
+export const meController = async (req: Request, res: Response) => {
+  const { token } = req.body;
 };
