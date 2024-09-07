@@ -3,6 +3,7 @@ import { userSignInSchema } from "../validation/userValidation";
 import bcrypt from "bcrypt";
 import axios from "axios";
 import { DB_URL } from "../config";
+import { AuthenticatedRequest, sign } from "../middlewares/auth";
 
 export const loginController = async (req: Request, res: Response) => {
   const signInData = req.body;
@@ -18,15 +19,13 @@ export const loginController = async (req: Request, res: Response) => {
     const { email, username } = result.data;
 
     const requestData: {
-      email?: string | undefined;
-      username?: string | undefined;
+      email?: string | undefined | null;
+      username?: string | undefined | null;
     } = {};
 
     if (email) {
       requestData.email = email;
-    }
-
-    if (username) {
+    } else if (username) {
       requestData.username = username;
     }
 
@@ -43,8 +42,20 @@ export const loginController = async (req: Request, res: Response) => {
         response.data.user.password
       );
       if (isValid) {
+        const token = sign(id); // used Id for creating todos of a particular user
+        res.cookie("token", token, {
+          maxAge: 60 * 60 * 24 * 10,
+          httpOnly: true,
+          sameSite: "none",
+        });
         return res
-          .json({ message: "Signed In Successfully", username, email, id })
+          .json({
+            message: "Signed In Successfully",
+            username,
+            email,
+            id,
+            token,
+          })
           .status(200);
       } else {
         return res
@@ -62,6 +73,15 @@ export const loginController = async (req: Request, res: Response) => {
   }
 };
 
-export const meController = async (req: Request, res: Response) => {
-  const { token } = req.body;
+export const meController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  if (!req.user?.id) {
+    return res.json({ message: "User Invalid. Please login again." });
+  }
+  return res.json({
+    message: "Verified successfully",
+    id: req.user.id,
+  });
 };

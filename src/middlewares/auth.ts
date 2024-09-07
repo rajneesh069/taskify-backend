@@ -1,15 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
-interface AuthenticatedRequest extends Request {
-  user?: string | jwt.JwtPayload;
+export interface AuthenticatedRequest extends Request {
+  user?: jwt.JwtPayload;
 }
 
-export const sign = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const sign = (id: string): string => {
+  const secret = process.env.JWT_SECRET as string;
+  if (!secret) throw new Error("Secret not available during signing.");
+  const token: string = jwt.sign({ id }, secret, {
+    expiresIn: 60 * 60 * 24 * 10,
+  });
+  return token;
 };
 
 export const authorize = async (
@@ -17,12 +19,13 @@ export const authorize = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { token } = req.body;
-
+  // todo: use cookies instead of auth header
+  const token = req.headers.authorization?.split(" ")[1];
+  console.log("req.cookies:", req.cookies);
   if (!token) {
     return res
       .status(401)
-      .json({ message: "No token provided, authorization denied." });
+      .json({ message: "No token provided, please login." });
   }
 
   const secret = process.env.JWT_SECRET as string;
@@ -46,14 +49,9 @@ export const authorize = async (
           });
         }
       }
-      if (decoded) {
-        req.user = decoded;
-        next();
-      } else {
-        return res.json({
-          message: "Token couldn't be properly decoded, please login again.",
-        });
-      }
+
+      req.user = decoded;
+      next();
     }
   );
 };

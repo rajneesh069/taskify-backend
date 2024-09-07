@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { signupController } from "../controllers/userControllers";
 import { loginController, meController } from "../controllers/authControllers";
+import { authorize } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/me", meController)
+router.get("/me", authorize, meController);
 
 router.post("/login", loginController);
 
@@ -19,6 +20,5 @@ router.post("/signup", signupController);
 // router.put("/editTodo/:id", editTodoController);
 
 // router.delete("/deleteTodo/:id", deleteTodoController);
-
 
 export default router;

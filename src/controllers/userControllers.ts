@@ -3,6 +3,7 @@ import { userSchema } from "../validation/userValidation";
 import axios from "axios";
 import { DB_URL } from "../config";
 import bcrypt from "bcrypt";
+import { sign } from "../middlewares/auth";
 
 export const signupController = async (req: Request, res: Response) => {
   const signupData = req.body;
@@ -37,8 +38,14 @@ export const signupController = async (req: Request, res: Response) => {
         withCredentials: true,
       }
     );
-    console.log(response);
+
     if (response.status === 200) {
+      const token = sign(response.data.user.id);
+      res.cookie(token, token, {
+        maxAge: 60 * 60 * 24 * 10,
+        httpOnly: true,
+        sameSite: "none",
+      });
       return res
         .json({
           message: "User signed up successfully",
