@@ -36,7 +36,7 @@ export const loginController = async (req: Request, res: Response) => {
       withCredentials: true,
     });
     if (response.status === 200) {
-      const { username, id, email } = response.data.user;
+      const { id } = response.data.user;
       const isValid = await bcrypt.compare(
         result.data.password,
         response.data.user.password
@@ -51,9 +51,7 @@ export const loginController = async (req: Request, res: Response) => {
         return res
           .json({
             message: "Signed In Successfully",
-            username,
-            email,
-            id,
+            user: response.data.user,
             token,
           })
           .status(200);
@@ -69,8 +67,22 @@ export const loginController = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error(error);
-    return res.json({ message: "Internal Server Error", error }).status(500);
+    return res
+      .json({ message: "Internal Server Error", error, user: null })
+      .status(500);
   }
+};
+
+export const logoutController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+  });
+  return res
+    .json({ message: "User logged out successfully.", user: null })
+    .status(200);
 };
 
 export const meController = async (

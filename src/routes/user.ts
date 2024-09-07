@@ -1,6 +1,14 @@
 import { Router } from "express";
-import { signupController } from "../controllers/userControllers";
-import { loginController, meController } from "../controllers/authControllers";
+import {
+  addTodoController,
+  getTodosController,
+  signupController,
+} from "../controllers/userControllers";
+import {
+  loginController,
+  logoutController,
+  meController,
+} from "../controllers/authControllers";
 import { authorize } from "../middlewares/auth";
 
 const router = Router();
@@ -11,11 +19,13 @@ router.post("/login", loginController);
 
 router.post("/signup", signupController);
 
-// router.get("/todos", getTodosController);
+router.get("/logout", logoutController);
+
+router.get("/todos", authorize, getTodosController);
 
 // router.get("/todos/:id", getTodoController);
 
-// router.post("/addTodo", addTodoController);
+router.post("/addTodo", authorize, addTodoController);
 
 // router.put("/editTodo/:id", editTodoController);
 
