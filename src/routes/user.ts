@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
   addTodoController,
+  editTodoController,
+  getTodoController,
   getTodosController,
   signupController,
 } from "../controllers/userControllers";
@@ -23,11 +25,11 @@ router.get("/logout", logoutController);
 
 router.get("/todos", authorize, getTodosController);
 
-// router.get("/todos/:id", getTodoController);
+router.get("/todos/:id", authorize, getTodoController);
 
 router.post("/addTodo", authorize, addTodoController);
 
-// router.put("/editTodo/:id", editTodoController);
+router.put("/editTodo/:id", editTodoController);
 
 // router.delete("/deleteTodo/:id", deleteTodoController);
 

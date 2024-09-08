@@ -129,3 +129,54 @@ export const addTodoController = async (
       .status(500);
   }
 };
+
+export const getTodoController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const { todoId } = req.body;
+  try {
+    const response = await axios.get(DB_URL + "/todos/" + todoId, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    if (response.status === 200) {
+      return res
+        .json({ todo: response.data.todo, message: "Todo found!" })
+        .status(200);
+    } else {
+      return res.json({ message: "Todo Not Found", todo: null }).status(404);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.json({ message: "Server Error", error, todo: null }).status(500);
+  }
+};
+
+export const editTodoController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const { todoId, updatedTodo } = req.body;
+  const userId = req.user?.id;
+  try {
+    const response = await axios.put(DB_URL + "/todos/" + todoId, {
+      ...updatedTodo,
+      userId,
+    });
+    if (response.status === 200) {
+      return res
+        .json({ message: "Todo Edited successfully", todo: response.data.todo })
+        .status(200);
+    } else {
+      return res
+        .json({ message: "Couldn't edit todo", todo: null })
+        .status(400);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.json({ message: "Failed to edit todo", error }).status(500);
+  }
+};
