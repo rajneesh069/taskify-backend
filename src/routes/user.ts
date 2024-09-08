@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addTodoController,
+  deleteTodoController,
   editTodoController,
   getTodoController,
   getTodosController,
@@ -31,6 +32,6 @@ router.post("/addTodo", authorize, addTodoController);
 
 router.put("/editTodo/:id", editTodoController);
 
-// router.delete("/deleteTodo/:id", deleteTodoController);
+router.delete("/deleteTodo/:id", deleteTodoController);
 
 export default router;

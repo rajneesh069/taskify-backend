@@ -168,15 +168,52 @@ export const editTodoController = async (
     });
     if (response.status === 200) {
       return res
-        .json({ message: "Todo Edited successfully", todo: response.data.todo })
+        .json({
+          message: "Todo Edited successfully",
+          editedTodo: response.data.todo,
+        })
         .status(200);
     } else {
       return res
-        .json({ message: "Couldn't edit todo", todo: null })
+        .json({ message: "Couldn't edit todo", editedTodo: null })
         .status(400);
     }
   } catch (error) {
     console.error(error);
-    return res.json({ message: "Failed to edit todo", error }).status(500);
+    return res
+      .json({ message: "Failed to edit todo", error, editedTodo: null })
+      .status(500);
+  }
+};
+
+export const deleteTodoController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const userId = req.user?.id;
+  const { todoId } = req.body;
+  try {
+    const response = await axios.delete(DB_URL + "/todos/" + todoId, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    if (response.status === 200) {
+      return res
+        .json({
+          message: "Deleted the todo successfully",
+          deletedTodo: response.data.todo,
+        })
+        .status(200);
+    } else {
+      return res
+        .json({ message: "Couldn't delete todo", deletedTodo: null })
+        .status(400);
+    }
+  } catch (error) {
+    return res
+      .json({ message: "Couldn't delete todo", deletedTodo: null })
+      .status(500);
   }
 };
